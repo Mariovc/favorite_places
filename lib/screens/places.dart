@@ -40,8 +40,11 @@ class _PlacesScreenState extends ConsumerState<PlacesScreen> {
                     color: Theme.of(context).colorScheme.onBackground),
               ),
             )
-          : PlacesList(
-              places: places,
+          : Padding(
+              padding: const EdgeInsets.all(8),
+              child: PlacesList(
+                places: places,
+              ),
             ),
     );
   }
