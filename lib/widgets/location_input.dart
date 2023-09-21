@@ -1,7 +1,9 @@
 import 'package:favorite_places/model/place.dart';
 import 'package:favorite_places/providers/maps_provider.dart';
+import 'package:favorite_places/screens/map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class LocationInput extends ConsumerStatefulWidget {
@@ -16,6 +18,30 @@ class LocationInput extends ConsumerStatefulWidget {
 class _LocationInputState extends ConsumerState<LocationInput> {
   PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
+
+  void _savePlace(double latitude, double longitude) async {
+    final address = await ref.watch(
+      resolveAddress(
+        PlaceCoordinates(
+          latitude: latitude,
+          longitude: longitude,
+        ),
+      ),
+    );
+
+    setState(() {
+      _pickedLocation = PlaceLocation(
+        coordinates: PlaceCoordinates(
+          latitude: latitude,
+          longitude: longitude,
+        ),
+        address: address,
+      );
+      _isGettingLocation = false;
+    });
+
+    widget.onSelectLocation(_pickedLocation!);
+  }
 
   void _getCurrentLocation() async {
     Location location = Location();
@@ -52,27 +78,22 @@ class _LocationInputState extends ConsumerState<LocationInput> {
       return;
     }
 
-    final address = await ref.watch(
-      resolveAddress(
-        PlaceCoordinates(
-          latitude: latitude,
-          longitude: longitude,
-        ),
+    _savePlace(latitude, longitude);
+  }
+
+  void _selectOnMap() async {
+    final pickedLocation = await Navigator.of(context).push<LatLng>(
+      MaterialPageRoute(
+        builder: (context) => const MapScreen(),
       ),
     );
 
-    setState(() {
-      _pickedLocation = PlaceLocation(
-        coordinates: PlaceCoordinates(
-          latitude: latitude,
-          longitude: longitude,
-        ),
-        address: address,
-      );
-      _isGettingLocation = false;
-    });
+    if (pickedLocation == null) return;
 
-    widget.onSelectLocation(_pickedLocation!);
+    _savePlace(
+      pickedLocation.latitude,
+      pickedLocation.longitude,
+    );
   }
 
   @override
@@ -121,7 +142,7 @@ class _LocationInputState extends ConsumerState<LocationInput> {
               label: const Text('Get Current Location'),
             ),
             TextButton.icon(
-              onPressed: () {},
+              onPressed: _selectOnMap,
               icon: const Icon(Icons.map),
               label: const Text('Select on Map'),
             ),
