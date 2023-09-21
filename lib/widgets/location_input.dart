@@ -1,30 +1,21 @@
-import 'dart:convert';
-
 import 'package:favorite_places/model/place.dart';
+import 'package:favorite_places/providers/maps_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
 
-class LocationInput extends StatefulWidget {
+class LocationInput extends ConsumerStatefulWidget {
   const LocationInput({super.key, required this.onSelectLocation});
 
   final void Function(PlaceLocation location) onSelectLocation;
 
   @override
-  State<LocationInput> createState() => _LocationInputState();
+  ConsumerState<LocationInput> createState() => _LocationInputState();
 }
 
-class _LocationInputState extends State<LocationInput> {
-  final _apiKey = 'AIzaSyDFciAguwmCd0kBexznM_fGDga_2qEJCxo';
+class _LocationInputState extends ConsumerState<LocationInput> {
   PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
-
-  String get locationImage {
-    if (_pickedLocation == null) return '';
-    final lat = _pickedLocation!.latitude;
-    final lng = _pickedLocation!.longitude;
-    return 'https://maps.googleapis.com/maps/api/staticmap?latlng=$lat,$lng&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C$lat,$lng&key=$_apiKey';
-  }
 
   void _getCurrentLocation() async {
     Location location = Location();
@@ -61,16 +52,21 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
 
-    final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$_apiKey');
-    final response = await http.get(url);
-    final responseData = json.decode(response.body);
-    final address = responseData['results'][0]['formatted_address'];
+    final address = await ref.watch(
+      resolveAddress(
+        PlaceCoordinates(
+          latitude: latitude,
+          longitude: longitude,
+        ),
+      ),
+    );
 
     setState(() {
       _pickedLocation = PlaceLocation(
-        latitude: latitude,
-        longitude: longitude,
+        coordinates: PlaceCoordinates(
+          latitude: latitude,
+          longitude: longitude,
+        ),
         address: address,
       );
       _isGettingLocation = false;
@@ -91,7 +87,7 @@ class _LocationInputState extends State<LocationInput> {
 
     if (_pickedLocation != null) {
       previewContent = Image.network(
-        locationImage,
+        ref.read(loadImage(_pickedLocation!.coordinates)),
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,

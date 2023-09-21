@@ -1,20 +1,17 @@
 import 'package:favorite_places/model/place.dart';
+import 'package:favorite_places/providers/maps_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PlaceDetailScreen extends StatelessWidget {
+class PlaceDetailScreen extends ConsumerWidget {
   const PlaceDetailScreen({super.key, required this.place});
 
   final Place place;
 
-  String get locationImage {
-    const apiKey = 'AIzaSyDFciAguwmCd0kBexznM_fGDga_2qEJCxo';
-    final lat = place.location.latitude;
-    final lng = place.location.longitude;
-    return 'https://maps.googleapis.com/maps/api/staticmap?latlng=$lat,$lng&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C$lat,$lng&key=$apiKey';
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locationImage = ref.read(loadImage(place.location.coordinates));
+
     return Scaffold(
       appBar: AppBar(
         title: Text(place.title),
