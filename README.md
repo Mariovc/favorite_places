@@ -1,6 +1,6 @@
 # favorite_places
 
-A new Flutter project.
+Add your favorite places to a locally saved list. Using native device features such as camera or location.
 
 ## Getting Started
 
