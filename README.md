@@ -2,15 +2,23 @@
 
 Add your favorite places to a locally saved list. Using native device features such as camera or location.
 
-## Getting Started
+[![demo](./art/favorite_places-android_cropped_trimmed_trimmed.gif)]()
+[![demo](./art/favorite_places-ios_cropped_trimmed.gif)]()
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Riverpod: for state management
+- Take a picture with your camera
+- Select a location using Google Maps
+- Store data locally with SQLFlite
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Contributing
+
+If you'd like to contribute to this project, please follow these steps:
+
+1. Fork this repository.
+2. Create a new branch for your feature or bug fix: `git checkout -b feature/new-feature`.
+3. Make your changes and commit them: `git commit -m 'Add new feature'`.
+4. Push to your forked repository: `git push origin feature/new-feature`.
+5. Create a pull request on the original repository. 
